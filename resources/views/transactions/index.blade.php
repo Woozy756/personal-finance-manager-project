@@ -1,6 +1,16 @@
 @extends('layouts.main')
 
 @section('content')
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <div>{{ session('success') }}</div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 mb-0">Transactions</h1>
@@ -70,9 +80,22 @@
                                     {{ $transaction->category->type == 'income' ? '+' : '-' }}${{ number_format($transaction->amount, 2) }}
                                 </td>
                                 <td class="text-center">
-                                    <div class="btn-group">
-                                        <a href="#" class="btn btn-sm btn-light border">Edit</a>
-                                        <button class="btn btn-sm btn-light border text-danger">Delete</button>
+                                    <div class="d-flex justify-content-center gap-1">
+
+                                        <a href="{{ route('transactions.edit', $transaction->id) }}"
+                                            class="btn btn-sm btn-light border">
+                                            Edit
+                                        </a>
+
+                                        <form action="{{ route('transactions.destroy', $transaction->id) }}" method="POST"
+                                            class="m-0" onsubmit="return confirm('Are you sure you want to delete this?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-light border text-danger">
+                                                Delete
+                                            </button>
+                                        </form>
+
                                     </div>
                                 </td>
                             </tr>
