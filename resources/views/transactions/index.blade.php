@@ -68,9 +68,8 @@
                                     {{ \Carbon\Carbon::parse($transaction->date)->format('M d, Y') }}
                                 </td>
                                 <td>
-                                    <span
-                                        class="badge {{ $transaction->category->type == 'income' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }} px-3">
-                                        <i class="{{ $transaction->category->icon }} me-1"></i>
+                                    <span class="badge {{ $transaction->category->type == 'income' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }} px-3">
+                                        <i class="fa-solid {{ $transaction->category->icon }} me-1"></i>
                                         {{ $transaction->category->name }}
                                     </span>
                                 </td>

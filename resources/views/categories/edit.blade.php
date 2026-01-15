@@ -37,24 +37,24 @@
         <div class="col-md-8">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0 fw-bold">Add New Category</h5>
+                    <h5 class="mb-0 fw-bold">Edit Category: {{ $category->name }}</h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('categories.store') }}" method="POST">
+                    <form action="{{ route('categories.update', $category->id) }}" method="POST">
                         @csrf
+                        @method('PUT')
 
                         <div class="row mb-3">
                             <div class="col-md-8">
                                 <label class="form-label fw-bold">Category Name</label>
-                                <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                                    value="{{ old('name') }}" placeholder="e.g. Groceries">
-                                @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
+                                    value="{{ old('name', $category->name) }}">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Type</label>
                                 <select name="type" class="form-select">
-                                    <option value="expense">Expense</option>
-                                    <option value="income">Income</option>
+                                    <option value="expense" {{ $category->type == 'expense' ? 'selected' : '' }}>Expense</option>
+                                    <option value="income" {{ $category->type == 'income' ? 'selected' : '' }}>Income</option>
                                 </select>
                             </div>
                         </div>
@@ -80,8 +80,8 @@
 
                             @foreach($icons as $iconName => $label)
                                 <div class="col-3 col-md-2">
-                                    <input type="radio" name="icon" id="{{ $iconName }}" value="{{ $iconName }}" {{ $loop->first ? 'checked' : '' }}>
-
+                                    <input type="radio" name="icon" id="{{ $iconName }}" value="{{ $iconName }}" 
+                                        {{ old('icon', $category->icon) == $iconName ? 'checked' : '' }}>
                                     <label for="{{ $iconName }}" class="text-center w-100">
                                         <i class="fa-solid {{ $iconName }} fa-2x mb-1"></i>
                                         <span class="small" style="font-size: 0.7rem;">{{ $label }}</span>
@@ -91,7 +91,7 @@
                         </div>
 
                         <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-primary">Save Category</button>
+                            <button type="submit" class="btn btn-primary">Update Category</button>
                             <a href="{{ route('categories.index') }}" class="btn btn-link text-muted">Cancel</a>
                         </div>
                     </form>
