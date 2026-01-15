@@ -12,66 +12,54 @@
 </div>
 
 <div class="row g-4">
+    @foreach($budgets as $budget)
     <div class="col-md-6">
         <div class="card shadow-sm border-0">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
-                        <h5 class="fw-bold mb-0">Food & Dining</h5>
-                        <span class="text-muted small">Target: $500.00</span>
+                        <h5 class="fw-bold mb-0">
+                            <i class="fa-solid {{ $budget->category->icon }} me-2 text-primary"></i>
+                            {{ $budget->category->name }}
+                        </h5>
+                        <span class="text-muted small">Target: ${{ number_format($budget->amount, 2) }}</span>
                     </div>
                     <div class="text-end">
-                        <span class="badge bg-warning text-dark">80% Used</span>
+                        @if($budget->percentage >= 100)
+                            <span class="badge bg-danger">Over Budget</span>
+                        @else
+                            <span class="badge bg-primary">{{ round($budget->percentage) }}% Used</span>
+                        @endif
                     </div>
                 </div>
 
                 <div class="progress mb-3" style="height: 10px;">
-                    <div class="progress-bar bg-warning" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div class="progress-bar {{ $budget->percentage >= 100 ? 'bg-danger' : ($budget->percentage > 80 ? 'bg-warning' : 'bg-success') }}" 
+                         role="progressbar" 
+                         style="width: {{ min($budget->percentage, 100) }}%">
+                    </div>
                 </div>
 
                 <div class="d-flex justify-content-between small">
-                    <span>Spent: <strong>$400.00</strong></span>
-                    <span>Remaining: <strong class="text-success">$100.00</strong></span>
+                    <span>Spent: <strong>${{ number_format($budget->spent, 2) }}</strong></span>
+                    <span>Remaining: 
+                        <strong class="{{ $budget->remaining < 0 ? 'text-danger' : 'text-success' }}">
+                            ${{ number_format($budget->remaining, 2) }}
+                        </strong>
+                    </span>
                 </div>
                 
                 <hr>
                 <div class="d-flex justify-content-end">
-                    <a href="#" class="btn btn-sm btn-link text-decoration-none p-0 me-3">Edit Limit</a>
-                    <button class="btn btn-sm btn-link text-danger text-decoration-none p-0">Remove</button>
+                    <a href="{{ route('budgets.edit', $budget->id) }}" class="btn btn-sm btn-link text-decoration-none p-0 me-3">Edit Limit</a>
+                    <form action="{{ route('budgets.destroy', $budget->id) }}" method="POST" onsubmit="return confirm('Remove this budget limit?')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none p-0">Remove</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="col-md-6">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <h5 class="fw-bold mb-0">Utilities</h5>
-                        <span class="text-muted small">Target: $150.00</span>
-                    </div>
-                    <div class="text-end">
-                        <span class="badge bg-danger">Over Budget</span>
-                    </div>
-                </div>
-
-                <div class="progress mb-3" style="height: 10px;">
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-
-                <div class="d-flex justify-content-between small">
-                    <span>Spent: <strong>$175.00</strong></span>
-                    <span>Remaining: <strong class="text-danger">-$25.00</strong></span>
-                </div>
-
-                <hr>
-                <div class="d-flex justify-content-end">
-                    <a href="#" class="btn btn-sm btn-link text-decoration-none p-0 me-3">Edit Limit</a>
-                    <button class="btn btn-sm btn-link text-danger text-decoration-none p-0">Remove</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    @endforeach
 </div>
 @endsection

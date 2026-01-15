@@ -43,4 +43,10 @@ Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])-
 // Budgets
 Route::get('/budgets', [BudgetController::class, 'index'])->name('budgets.index');
 Route::get('/budgets/create', [BUdgetController::class, 'create'])->name('budgets.create');
+Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
+Route::get('/budgets/{budget}/edit', [BudgetController::class, 'edit'])->name('budgets.edit');
+Route::put('/budgets/{budget}', [BudgetController::class, 'update'])->name('budgets.update');
+Route::delete('/budgets/{budget}', [BudgetController::class, 'destroy'])->name('budgets.destroy');
+
+
 

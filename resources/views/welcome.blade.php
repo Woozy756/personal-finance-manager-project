@@ -108,31 +108,35 @@
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0 fw-bold"><i class="fas fa-bullseye me-2 text-primary"></i>Budget Pulse</h5>
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-bullseye me-2 text-primary"></i>Budgets</h5>
                 </div>
                 <div class="card-body">
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span class="small fw-bold">Food</span>
-                            <span class="small text-muted">$400 / $500</span>
+                    @forelse($budgets as $budget)
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="small fw-bold">{{ $budget->category->name }}</span>
+                                <span class="small text-muted">
+                                    ${{ number_format($budget->spent, 0) }} / ${{ number_format($budget->amount, 0) }}
+                                </span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar {{ $budget->percentage >= 100 ? 'bg-danger' : ($budget->percentage > 80 ? 'bg-warning' : 'bg-success') }}"
+                                    role="progressbar" style="width: {{ min($budget->percentage, 100) }}%"
+                                    aria-valuenow="{{ $budget->percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
                         </div>
-                        <div class="progress" style="height: 6px;">
-                            <div class="progress-bar bg-warning" style="width: 80%"></div>
+                    @empty
+                        <div class="text-center py-4">
+                            <p class="text-muted small">No budgets set for this month.</p>
+                            <a href="{{ route('budgets.create') }}" class="btn btn-sm btn-outline-primary">Set Budget</a>
                         </div>
-                    </div>
-                    <div class="mb-2">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span class="small fw-bold">Utilities</span>
-                            <span class="small text-muted">$180 / $150</span>
-                        </div>
-                        <div class="progress" style="height: 6px;">
-                            <div class="progress-bar bg-danger" style="width: 100%"></div>
-                        </div>
-                    </div>
+                    @endforelse
                 </div>
                 <div class="card-footer bg-white border-0 text-center">
-                    <a href="{{ route('budgets.index') }}" class="text-decoration-none small">Manage Budgets <i
-                            class="fas fa-cog ms-1"></i></a>
+                    <a href="{{ route('budgets.index') }}" class="text-decoration-none small">
+                        Manage Budgets <i class="fas fa-cog ms-1"></i>
+                    </a>
                 </div>
             </div>
         </div>
