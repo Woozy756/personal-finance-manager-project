@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
@@ -84,5 +86,55 @@ class TransactionController extends Controller
 
         // redirect with success message
         return redirect()->route('transactions.index')->with('success', 'Transaction deleted successfully!');
+    }
+
+    public function apiSuggest(Request $request)
+    {
+        // validate that desctiption exists
+        $request->validate(['description' => 'required|string']);
+
+        //ask ai
+        $categoryId = $this->guessCategory($request->description);
+
+        //return answer in a json
+        return response()->json([
+            'category_id' => $categoryId,
+            'success' => $categoryId ? true : false
+        ]);
+    }
+
+    private function guessCategory($description)
+    {
+        $apiKey = config('services.gemini.key');
+
+        //fetch all categories as a simple list
+        $categories = Category::pluck('name')->toArray();
+        $categoriesList = implode(', ', $categories);
+
+        // prompt the AI
+        $prompt = "I have a transaction description: '{$description}'. 
+               Based on this, choose exactly one category from this list: [{$categoriesList}]. 
+               Return ONLY the category name. Do not write sentences.";
+
+
+        $response = Http::withHeaders(['Content-Type' => 'application/json'])
+            ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key={$apiKey}", [
+                'contents' => [['parts' => [['text' => $prompt]]]]
+            ]);
+
+        if ($response->successful()) {
+            // extract text
+            $aiText = $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? '';
+
+            // clean up
+            $guessedName = trim(str_replace(['"', "'", "\n"], '', $aiText));
+
+            // find the category in your database
+            $category = Category::where('name', 'LIKE', $guessedName)->first();
+
+            return $category ? $category->id : null;
+        }
+
+        return null;
     }
 }

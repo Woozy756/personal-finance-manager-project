@@ -10,7 +10,12 @@
                 <div class="card-body">
                     <form action="{{ route('transactions.store') }}" method="POST">
                         @csrf
-
+                        <div class="mb-4">
+                            <label for="description" class="form-label fw-bold">Description</label>
+                            <textarea name="description" id="description" rows="3"
+                                class="form-control @error('description') is-invalid @enderror">{{ old('description') }}</textarea>
+                            @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
                         <div class="mb-4">
                             <label for="amount" class="form-label fw-bold">Amount</label>
                             <div class="input-group">
@@ -44,13 +49,7 @@
                             @error('transaction_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
-                        <div class="mb-4">
-                            <label for="description" class="form-label fw-bold">Description</label>
-                            <textarea name="description" id="description" rows="3"
-                                class="form-control @error('description') is-invalid @enderror"
-                                placeholder="Optional notes...">{{ old('description') }}</textarea>
-                            @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
+                        
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-lg">Save Transaction</button>
@@ -63,3 +62,44 @@
         </div>
     </div>
 @endsection
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const descInput = document.querySelector('textarea[name="description"]');
+        const catSelect = document.querySelector('select[name="category_id"]');
+
+        descInput.addEventListener('blur', function() {
+            let description = this.value;
+
+            if (description.length < 3) return;
+
+            // thinking visual cue
+            descInput.style.opacity = "0.5";
+
+            fetch('/api/suggest-category', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ description: description })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // restore opacity
+                descInput.style.opacity = "1";
+
+                if (data.success && data.category_id) {
+                    catSelect.value = data.category_id;
+                    
+                    // green symbol to show it worked
+                    catSelect.classList.add('is-valid'); 
+                    setTimeout(() => catSelect.classList.remove('is-valid'), 2000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                descInput.style.opacity = "1";
+            });
+        });
+    });
+</script>
