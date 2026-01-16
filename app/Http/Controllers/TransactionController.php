@@ -116,23 +116,27 @@ class TransactionController extends Controller
                Based on this, choose exactly one category from this list: [{$categoriesList}]. 
                Return ONLY the category name. Do not write sentences.";
 
+        try {
+            $response = Http::withHeaders(['Content-Type' => 'application/json'])
+                ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key={$apiKey}", [
+                    'contents' => [['parts' => [['text' => $prompt]]]]
+                ]);
 
-        $response = Http::withHeaders(['Content-Type' => 'application/json'])
-            ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key={$apiKey}", [
-                'contents' => [['parts' => [['text' => $prompt]]]]
-            ]);
+            if ($response->successful()) {
+                // extract text
+                $aiText = $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? '';
 
-        if ($response->successful()) {
-            // extract text
-            $aiText = $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? '';
+                // clean up
+                $guessedName = trim(str_replace(['"', "'", "\n"], '', $aiText));
 
-            // clean up
-            $guessedName = trim(str_replace(['"', "'", "\n"], '', $aiText));
+                // find the category in your database
+                $category = Category::where('name', 'LIKE', $guessedName)->first();
 
-            // find the category in your database
-            $category = Category::where('name', 'LIKE', $guessedName)->first();
-
-            return $category ? $category->id : null;
+                return $category ? $category->id : null;
+            }
+        } catch (\Exception $e) {
+            Log::error("Gemini Error: " . $e->getMessage());
+            return null;
         }
 
         return null;

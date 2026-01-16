@@ -8,8 +8,8 @@
             <h1 class="h3 mb-0">Transactions</h1>
             <p class="text-muted small mb-0">A complete history of your income and expenses</p>
         </div>
-        <a href="{{route("transactions.create")}}" class="btn btn-primary shadow-sm">
-            <i class="bi bi-plus"></i> + Add Transaction
+        <a href="{{ route('transactions.create') }}" class="btn btn-primary shadow-sm">
+                <i class="fas fa-plus-circle me-1"></i> Add Transaction
         </a>
     </div>
 

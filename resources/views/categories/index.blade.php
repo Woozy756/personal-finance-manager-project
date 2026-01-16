@@ -27,8 +27,8 @@
             <h1 class="h3 mb-0">Categories</h1>
             <p class="text-muted">Manage your income and expense groups</p>
         </div>
-        <a href="{{route("categories.create")}}" class="btn btn-primary">
-            + Add Category
+        <a href="{{ route('categories.create') }}" class="btn btn-primary shadow-sm">
+            <i class="fas fa-plus-circle me-1"></i> Add Category
         </a>
     </div>
 
