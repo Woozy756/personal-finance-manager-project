@@ -21,7 +21,7 @@
 </style>
 
 @section('content')
-    
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 mb-0">Categories</h1>
@@ -34,7 +34,7 @@
 
     <div class="row g-4"> @foreach($categories as $category)
         <div class="col-md-3 col-sm-6">
-            <div class="card category-card shadow border-0 h-100 py-3">
+            <div class="card category-card shadow border-0 h-100 py-3 position-relative">
                 <div class="card-body text-center d-flex flex-column justify-content-center">
 
                     <div class="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-3 mx-auto"
@@ -54,9 +54,12 @@
                     <p class="text-muted small mb-0 px-2">
                         {{ $category->description ?? 'No description provided.' }}
                     </p>
+
+                    <a href="{{ route('transactions.index', ['category_id' => $category->id]) }}"
+                        class="stretched-link"></a>
                 </div>
 
-                <div class="card-footer bg-transparent border-0 text-center pb-3">
+                <div class="card-footer bg-transparent border-0 text-center pb-3 position-relative" style="z-index: 2;">
                     <a href="{{ route('categories.edit', $category->id) }}"
                         class="btn btn-sm btn-outline-secondary border-0">
                         <i class="fas fa-edit"></i>
